@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Missão Especial 😏</title>
+<style>
+  :root {
+    --rosa: #ff5d8f;
+    --rosa-escuro: #e03e72;
+    --roxo: #7b2ff7;
+    --fundo1: #ffd3e0;
+    --fundo2: #c4b5fd;
+    --texto: #3a2a4d;
+    --branco: #fff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body { height: 100%; }
+
+  body {
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    background: linear-gradient(135deg, var(--fundo1), var(--fundo2));
+    color: var(--texto);
+    min-height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    overflow-x: hidden;
+  }
+
+  .card {
+    background: var(--branco);
+    width: 100%;
+    max-width: 480px;
+    border-radius: 24px;
+    padding: 36px 28px;
+    box-shadow: 0 20px 60px rgba(123, 47, 247, 0.25);
+    text-align: center;
+    position: relative;
+  }
+
+  .emoji-grande { font-size: 54px; line-height: 1; margin-bottom: 12px; }
+
+  h1 { font-size: 24px; margin-bottom: 10px; line-height: 1.3; }
+
+  p.sub { font-size: 16px; color: #6b5b7a; margin-bottom: 24px; line-height: 1.5; }
+
+  .passo { display: none; }
+  .passo.ativo { display: block; animation: aparece .4s ease; }
+
+  @keyframes aparece {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .btn {
+    display: inline-block;
+    border: none;
+    border-radius: 999px;
+    padding: 14px 26px;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease;
+    margin: 6px;
+    font-family: inherit;
+  }
+
+  .btn-primario {
+    background: linear-gradient(135deg, var(--rosa), var(--roxo));
+    color: var(--branco);
+    box-shadow: 0 8px 20px rgba(224, 62, 114, 0.4);
+  }
+  .btn-primario:hover { transform: translateY(-2px) scale(1.03); }
+
+  .btn-secundario {
+    background: #f0eaf7;
+    color: var(--texto);
+  }
+  .btn-secundario:hover { transform: translateY(-2px); }
+
+  .opcoes { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+
+  .reacao {
+    margin-top: 18px;
+    font-size: 15px;
+    color: #e11d2a;
+    font-weight: 700;
+    min-height: 22px;
+  }
+
+  /* Área da pergunta final onde o botão "Não" foge */
+  .arena {
+    position: relative;
+    min-height: 160px;
+    margin-top: 10px;
+  }
+
+  #btnNao {
+    background: #f0eaf7;
+    color: var(--texto);
+    position: relative;
+    transition: none;
+  }
+
+  #btnSim { transform-origin: center; }
+
+  input[type="date"] {
+    font-family: inherit;
+    font-size: 16px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 2px solid var(--fundo2);
+    width: 100%;
+    margin: 10px 0 20px;
+    color: var(--texto);
+  }
+
+  .confete {
+    position: fixed;
+    top: -10px;
+    font-size: 22px;
+    pointer-events: none;
+    animation: cair linear forwards;
+    z-index: 999;
+  }
+  @keyframes cair {
+    to { transform: translateY(110vh) rotate(720deg); opacity: 0.9; }
+  }
+
+  .rodape { margin-top: 22px; font-size: 12px; color: #a394b5; }
+</style>
+</head>
+<body>
+  <div class="card">
+
+    <!-- Passo 0: início -->
+    <div class="passo ativo" id="passo0">
+      <div class="emoji-grande">💌</div>
+      <h1>Oi, <span id="nomeInicio"></span>!</h1>
+      <p class="sub">Eu tenho uma missão muito importante pra você. São só algumas perguntinhas rápidas... responde com sinceridade, hein 😏</p>
+      <button class="btn btn-primario" onclick="irPara(1)">Bora lá! 🚀</button>
+    </div>
+
+    <!-- Passo 1: pegadinha TI -->
+    <div class="passo" id="passo1">
+      <div class="emoji-grande">💻</div>
+      <h1>Pergunta 1</h1>
+      <p class="sub">Na real agora: você já saiu com um cara de TI?</p>
+      <div class="opcoes">
+        <button class="btn btn-secundario" onclick="reagir('r1', 'Hmm... então você ainda não conhece o melhor tipo de nerd 😎', 2)">Nunca saí 😳</button>
+        <button class="btn btn-secundario" onclick="reagir('r1', 'Então você já sabe que a gente resolve qualquer problema 😏', 2)">Já sim 👀</button>
+      </div>
+      <div class="reacao" id="r1"></div>
+    </div>
+
+    <!-- Passo 2: nota de beleza -->
+    <div class="passo" id="passo2">
+      <div class="emoji-grande">⭐</div>
+      <h1>Pergunta 2</h1>
+      <p class="sub">De 0 a 10, o quão linda você se acha hoje?</p>
+      <div class="opcoes">
+        <button class="btn btn-secundario" onclick="reagir('r2', 'Resposta errada! O certo era 11. Deixa que eu te lembro disso pessoalmente 😌', 3)">Uns 8? 🙈</button>
+        <button class="btn btn-secundario" onclick="reagir('r2', 'Modéstia é bonito, mas a resposta certa é 11 😍', 3)">Sei lá, 7 🤷‍♀️</button>
+        <button class="btn btn-secundario" onclick="reagir('r2', 'ISSO! Finalmente alguém com bom gosto (em si mesma) 🔥', 3)">11, óbvio 💅</button>
+      </div>
+      <div class="reacao" id="r2"></div>
+    </div>
+
+    <!-- Passo 3: tipo de encontro -->
+    <div class="passo" id="passo3">
+      <div class="emoji-grande">🍿</div>
+      <h1>Pergunta 3</h1>
+      <p class="sub">Se rolasse um encontro (só supondo 👀), você preferia o quê?</p>
+      <div class="opcoes">
+        <button class="btn btn-secundario" onclick="reagir('r3', 'Jantar então! Já tô pesquisando lugar 🍝', 4)">Um jantar 🍝</button>
+        <button class="btn btn-secundario" onclick="reagir('r3', 'Cinema é perfeito pra eu roubar sua pipoca 🍿', 4)">Cinema 🎬</button>
+        <button class="btn btn-secundario" onclick="reagir('r3', 'Surpresa?! Você é corajosa, eu gostei 😏', 4)">Me deixa surpresa 🎁</button>
+      </div>
+      <div class="reacao" id="r3"></div>
+    </div>
+
+    <!-- Passo 4: pergunta principal com botão fujão -->
+    <div class="passo" id="passo4">
+      <div class="emoji-grande">❤️</div>
+      <h1>Pergunta final (a importante)</h1>
+      <p class="sub">Depois de tudo isso... <strong>quer sair comigo?</strong></p>
+      <div class="arena" id="arena">
+        <button class="btn btn-primario" id="btnSim" onclick="irPara(5)">Sim! 🥰</button>
+        <button class="btn" id="btnNao">Não 🙄</button>
+      </div>
+      <div class="reacao" id="r4"></div>
+    </div>
+
+    <!-- Passo 5: escolher data -->
+    <div class="passo" id="passo5">
+      <div class="emoji-grande">🎉</div>
+      <h1>EEEEBA! 🥳</h1>
+      <p class="sub">Eu sabia que você tinha bom gosto! Agora só falta marcar. Qual dia você topa?</p>
+      <input type="date" id="dataEncontro" />
+      <br />
+      <button class="btn btn-primario" onclick="confirmarData()">Confirmar encontro 📅</button>
+      <div class="reacao" id="r5"></div>
+    </div>
+
+    <!-- Passo 6: final -->
+    <div class="passo" id="passo6">
+      <div class="emoji-grande">😎</div>
+      <h1>Encontro marcado!</h1>
+      <p class="sub" id="textoFinal"></p>
+      <p class="sub">Pode se preparar que vai ser inesquecível. Até lá! 💜</p>
+    </div>
+
+    <div class="rodape">feito com 💜 e um pouquinho de código</div>
+  </div>
+
+<script>
+  /* ===== PERSONALIZE AQUI ===== */
+  const NOME_DELA = "Julia";   // troque pelo nome dela, ex: "Ana"
+  const SEU_NOME  = "eu";      // opcional: seu nome
+  /* ============================= */
+
+  document.getElementById("nomeInicio").textContent = NOME_DELA;
+
+  function irPara(n) {
+    document.querySelectorAll(".passo").forEach(p => p.classList.remove("ativo"));
+    document.getElementById("passo" + n).classList.add("ativo");
+    if (n === 5) soltarConfete();
+  }
+
+  function reagir(idReacao, texto, proximo) {
+    const el = document.getElementById(idReacao);
+    el.textContent = texto;
+    setTimeout(() => irPara(proximo), 3000);
+  }
+
+  /* ----- Botão "Não" fujão ----- */
+  const btnNao = document.getElementById("btnNao");
+  const btnSim = document.getElementById("btnSim");
+  const arena = document.getElementById("arena");
+  let vezes = 0;
+  const frases = [
+    "Não 🙄", "Tenta de novo 😜", "Nem vem 😏", "Não existe essa opção 😂",
+    "Para! 🤣", "Desiste 💪", "O 'Sim' tá logo ali 👉", "Sério mesmo? 😅"
+  ];
+
+  function fugir() {
+    vezes++;
+    // move o botão pra uma posição aleatória dentro do card
+    const card = arena.getBoundingClientRect();
+    const maxX = Math.max(card.width - btnNao.offsetWidth, 0);
+    const maxY = 120;
+    const x = Math.random() * maxX;
+    const y = Math.random() * maxY;
+    btnNao.style.position = "absolute";
+    btnNao.style.left = x + "px";
+    btnNao.style.top = y + "px";
+    btnNao.textContent = frases[vezes % frases.length];
+
+    // o "Sim" vai crescendo pra ficar irresistível
+    const escala = Math.min(1 + vezes * 0.12, 2.4);
+    btnSim.style.transform = "scale(" + escala + ")";
+  }
+
+  btnNao.addEventListener("mouseover", fugir);
+  btnNao.addEventListener("click", function (e) { e.preventDefault(); fugir(); });
+  btnNao.addEventListener("touchstart", function (e) { e.preventDefault(); fugir(); }, { passive: false });
+
+  /* ----- Confirmar data ----- */
+  function confirmarData() {
+    const input = document.getElementById("dataEncontro");
+    if (!input.value) {
+      document.getElementById("r5").textContent = "Escolhe um dia primeiro 😊";
+      return;
+    }
+    const d = new Date(input.value + "T00:00:00");
+    const opcoes = { weekday: "long", day: "numeric", month: "long" };
+    const formatada = d.toLocaleDateString("pt-BR", opcoes);
+    document.getElementById("textoFinal").innerHTML =
+      "Dia <strong>" + formatada + "</strong>. Anotado! 📝";
+    soltarConfete();
+    irPara(6);
+  }
+
+  /* ----- Confete ----- */
+  function soltarConfete() {
+    const emojis = ["🎉", "💜", "❤️", "✨", "🥳", "💖", "🌟"];
+    for (let i = 0; i < 40; i++) {
+      const c = document.createElement("div");
+      c.className = "confete";
+      c.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      c.style.left = Math.random() * 100 + "vw";
+      c.style.animationDuration = (2 + Math.random() * 2) + "s";
+      c.style.animationDelay = Math.random() * 0.5 + "s";
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 4500);
+    }
+  }
+</script>
+</body>
+</html>
