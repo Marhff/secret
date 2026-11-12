@@ -232,7 +232,6 @@
     "P1 - Já saiu com cara de TI?": "(não respondeu)",
     "P2 - Nota de beleza": "(não respondeu)",
     "P3 - Tipo de encontro": "(não respondeu)",
-    "Aceitou sair?": "(não chegou aqui)",
     "Data escolhida": "(não escolheu)"
   };
 
@@ -245,10 +244,7 @@
   function irPara(n) {
     document.querySelectorAll(".passo").forEach(p => p.classList.remove("ativo"));
     document.getElementById("passo" + n).classList.add("ativo");
-    if (n === 5) {
-      respostas["Aceitou sair?"] = "SIM 🥰";
-      soltarConfete();
-    }
+    if (n === 5) soltarConfete();
   }
 
   function reagir(idReacao, texto, proximo) {
