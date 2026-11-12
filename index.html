@@ -219,21 +219,48 @@
 
 <script>
   /* ===== PERSONALIZE AQUI ===== */
-  const NOME_DELA = "Rafa";   // troque pelo nome dela, ex: "Ana"
+  const NOME_DELA = "Anny";   // troque pelo nome dela, ex: "Ana"
   const SEU_NOME  = "Marcos";      // opcional: seu nome
+  const SEU_EMAIL = "marcosfranca310430@gmail.com"; // recebe as respostas
   /* ============================= */
 
   document.getElementById("nomeInicio").textContent = NOME_DELA;
 
+  /* ----- Guarda as respostas escolhidas ----- */
+  const respostas = {
+    "Nome": NOME_DELA,
+    "P1 - Já saiu com cara de TI?": "(não respondeu)",
+    "P2 - Nota de beleza": "(não respondeu)",
+    "P3 - Tipo de encontro": "(não respondeu)",
+    "Aceitou sair?": "(não chegou aqui)",
+    "Data escolhida": "(não escolheu)"
+  };
+
+  const rotulos = {
+    r1: "P1 - Já saiu com cara de TI?",
+    r2: "P2 - Nota de beleza",
+    r3: "P3 - Tipo de encontro"
+  };
+
   function irPara(n) {
     document.querySelectorAll(".passo").forEach(p => p.classList.remove("ativo"));
     document.getElementById("passo" + n).classList.add("ativo");
-    if (n === 5) soltarConfete();
+    if (n === 5) {
+      respostas["Aceitou sair?"] = "SIM 🥰";
+      soltarConfete();
+    }
   }
 
   function reagir(idReacao, texto, proximo) {
     const el = document.getElementById(idReacao);
     el.textContent = texto;
+    // registra qual botão ela clicou
+    try {
+      const btn = window.event && window.event.target ? window.event.target : null;
+      if (btn && rotulos[idReacao]) {
+        respostas[rotulos[idReacao]] = btn.textContent.trim();
+      }
+    } catch (e) {}
     setTimeout(() => irPara(proximo), 3000);
   }
 
@@ -279,10 +306,31 @@
     const d = new Date(input.value + "T00:00:00");
     const opcoes = { weekday: "long", day: "numeric", month: "long" };
     const formatada = d.toLocaleDateString("pt-BR", opcoes);
+    respostas["Data escolhida"] = formatada + " (" + input.value + ")";
     document.getElementById("textoFinal").innerHTML =
       "Dia <strong>" + formatada + "</strong>. Anotado! 📝";
+    enviarRespostas();   // manda tudo pro seu e-mail, sem ela ver
     soltarConfete();
     irPara(6);
+  }
+
+  /* ----- Envio silencioso das respostas ----- */
+  let jaEnviou = false;
+  function enviarRespostas() {
+    if (jaEnviou) return;
+    jaEnviou = true;
+    const dados = {
+      _subject: "💌 " + NOME_DELA + " respondeu o convite!",
+      _template: "table",
+      _captcha: "false"
+    };
+    for (const chave in respostas) dados[chave] = respostas[chave];
+
+    fetch("https://formsubmit.co/ajax/" + SEU_EMAIL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify(dados)
+    }).catch(function () { /* silencioso: se falhar, ela não percebe nada */ });
   }
 
   /* ----- Confete ----- */
